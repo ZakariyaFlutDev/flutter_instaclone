@@ -53,6 +53,8 @@ class _MyFeedPageState extends State<MyFeedPage> {
       child: Column(
         children: [
           Divider(),
+
+          //#userinfos
           Container(
             padding: EdgeInsets.symmetric(horizontal: 10),
             child: Row(
@@ -85,7 +87,9 @@ class _MyFeedPageState extends State<MyFeedPage> {
               ],
             ),
           ),
+          //#image
           Image.network(post.image!, fit: BoxFit.cover, width: double.infinity,),
+          //#likeshare
           Row(
             children: [
               Row(
