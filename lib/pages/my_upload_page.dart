@@ -16,8 +16,10 @@ class _MyUploadPageState extends State<MyUploadPage> {
   var captionController = TextEditingController();
 
   imageFromGallery() async {
-    PickedFile? pickedFile = await ImagePicker()
-        .getImage(source: ImageSource.gallery, maxHeight: 200, maxWidth: 200);
+    XFile? pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery, maxHeight: 200, maxWidth: 200);
+
+    // XFile? pickedFile = (await ImagePicker()
+    //     .pickImage(source: ImageSource.gallery, maxHeight: 200, maxWidth: 200));
     if (pickedFile != null) {
       setState(() {
         imageFile = File(pickedFile.path);
@@ -25,7 +27,11 @@ class _MyUploadPageState extends State<MyUploadPage> {
     }
   }
 
-  _upLoadNewPost(){}
+  _upLoadNewPost(){
+    String caption = captionController.text.toString().trim();
+    if(caption == null) return;
+    if(imageFile == null) return;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +45,7 @@ class _MyUploadPageState extends State<MyUploadPage> {
         actions: [
           IconButton(
             onPressed: (){
-              // _upLoadNewPost();
+              _upLoadNewPost();
             },
             icon: Icon(Icons.post_add, color: Color.fromRGBO(245, 96, 64, 1),),
           )
@@ -55,13 +61,40 @@ class _MyUploadPageState extends State<MyUploadPage> {
                   imageFromGallery();
                 },
                 child: Container(
+                    width: double.infinity,
                     height: MediaQuery.of(context).size.width,
                     color: Colors.grey.withOpacity(0.4),
                     child: imageFile == null ?
                     Center(
                       child: Icon(Icons.add_a_photo, color: Colors.grey, size: 60,),
-                    ) :
-                    Image.file(imageFile!, fit: BoxFit.cover, )
+                    )
+                      : Stack(
+                          children: [
+                            Container(
+                              height: double.infinity,
+                              child: Image.file(imageFile!, fit: BoxFit.cover, ),
+                            ),
+                            Container(
+                              padding: EdgeInsets.all(10),
+                              width: double.infinity,
+                              color: Colors.black12,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.highlight_remove, color: Colors.white,),
+                                onPressed: (){
+                                  setState(() {
+                                    imageFile = null;
+                                  });
+                                },
+                              )
+                            ],
+                          ),
+                          )
+                      ],
+                    )
+
                 ),
               ),
               Container(
