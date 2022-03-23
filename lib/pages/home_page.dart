@@ -32,14 +32,14 @@ class _HomePageState extends State<HomePage> {
       body: PageView(
         controller: _pageController,
         onPageChanged: (int index){
-
+          setState(() {
             _currentIndex = index;
-
+          });
         },
-        children: [
-          MyFeedPage(),
+        children:  [
+          MyFeedPage(pageController: _pageController,),
           MySearchPage(),
-          MyUploadPage(),
+          MyUploadPage(pageController: _pageController,),
           MyLikesPage(),
           MyProfilePage(),
         ],
@@ -55,7 +55,7 @@ class _HomePageState extends State<HomePage> {
         },
         activeColor:  Color.fromRGBO(131, 58, 180, 1),
 
-        items: [
+        items: const [
           BottomNavigationBarItem(
              icon: Icon(Icons.home,size: 32,)
            ),

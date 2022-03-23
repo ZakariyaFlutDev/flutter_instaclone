@@ -1,7 +1,13 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_instaclone/model/post_model.dart';
+
+
 class MyFeedPage extends StatefulWidget {
-  const MyFeedPage({Key? key}) : super(key: key);
+  MyFeedPage({this.pageController, Key? key}) : super(key: key);
+
+  PageController? pageController;
+
 
   @override
   _MyFeedPageState createState() => _MyFeedPageState();
@@ -18,8 +24,14 @@ class _MyFeedPageState extends State<MyFeedPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    items.add(new Post(image: postImg1, caption: "Bu test uchun yozilgan ma'lumot"));
-    items.add(new Post(image: postImg2, caption: "Bu test uchun yozilgan ma'lumot"));
+    items.add(Post(image: postImg1, caption: "Bu test uchun yozilgan ma'lumot"));
+    items.add(Post(image: postImg2, caption: "Bu test uchun yozilgan ma'lumot"));
+
+  }
+
+  _createPost(){
+    widget.pageController!.animateToPage(2,
+        duration: Duration(milliseconds: 300), curve: Curves.easeIn);
   }
 
   @override
@@ -29,12 +41,12 @@ class _MyFeedPageState extends State<MyFeedPage> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: Text("Instagram", style: TextStyle(color: Colors.black, fontFamily: 'Billabong', fontSize: 30),),
+        title: const Text("Instagram", style: TextStyle(color: Colors.black, fontFamily: 'Billabong', fontSize: 30),),
         centerTitle: true,
         actions: [
           IconButton(
-            onPressed: (){},
-            icon: Icon(Icons.camera_alt, color: Colors.black,),
+            onPressed: _createPost,
+            icon: const Icon(Icons.camera_alt, color: Colors.black,),
           )
         ],
       ),
@@ -52,17 +64,17 @@ class _MyFeedPageState extends State<MyFeedPage> {
       color: Colors.white,
       child: Column(
         children: [
-          Divider(),
+          const Divider(),
 
           //#userinfos
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
                   children: [
-                    ClipRRect(
+                    const ClipRRect(
                       child: Image(
                         image: AssetImage("assets/images/ic_person.jpg"),
                         width: 40,
@@ -70,10 +82,10 @@ class _MyFeedPageState extends State<MyFeedPage> {
                         fit: BoxFit.cover,
                       ),
                     ),
-                    SizedBox(width: 10,),
+                    const SizedBox(width: 10,),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                      children: const [
                         Text("Username", style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold, color: Colors.black),),
                         Text("March 17, 2022", style: TextStyle(color: Colors.black),)
                       ],
@@ -82,13 +94,24 @@ class _MyFeedPageState extends State<MyFeedPage> {
                 ),
                 IconButton(
                   onPressed: (){},
-                  icon: Icon(Icons.more_horiz_outlined, color: Colors.black,size: 35,),
+                  icon: const Icon(Icons.more_horiz_outlined, color: Colors.black,size: 35,),
                 )
               ],
             ),
           ),
+
           //#image
-          Image.network(post.image!, fit: BoxFit.cover, width: double.infinity,),
+          // Image.network(post.image!, fit: BoxFit.cover, width: double.infinity,),
+          CachedNetworkImage(
+            width: double.infinity,
+            imageUrl: post.image!,
+            fit: BoxFit.cover,
+            placeholder: (context, url) => Center(
+              child: CircularProgressIndicator(),
+            ),
+            errorWidget: (context, url, error) => Icon(Icons.error),
+          ),
+
           //#likeshare
           Row(
             children: [
@@ -96,11 +119,11 @@ class _MyFeedPageState extends State<MyFeedPage> {
                 children: [
                   IconButton(
                     onPressed: (){},
-                    icon: Icon(Icons.favorite_border_outlined),
+                    icon: const Icon(Icons.favorite_border_outlined),
                   ),
                   IconButton(
                     onPressed: (){},
-                    icon: Icon(Icons.send_rounded),
+                    icon: const Icon(Icons.send_rounded),
                   ),
                 ],
               )

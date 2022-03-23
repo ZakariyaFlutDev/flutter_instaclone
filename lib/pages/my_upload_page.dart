@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 class MyUploadPage extends StatefulWidget {
-  const MyUploadPage({Key? key}) : super(key: key);
+  MyUploadPage({Key? key, required this.pageController}) : super(key: key);
+
+  PageController pageController;
 
   @override
   _MyUploadPageState createState() => _MyUploadPageState();
@@ -16,10 +18,8 @@ class _MyUploadPageState extends State<MyUploadPage> {
   var captionController = TextEditingController();
 
   imageFromGallery() async {
-    XFile? pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery, maxHeight: 200, maxWidth: 200);
-
-    // XFile? pickedFile = (await ImagePicker()
-    //     .pickImage(source: ImageSource.gallery, maxHeight: 200, maxWidth: 200));
+    XFile? pickedFile = await ImagePicker()
+        .pickImage(source: ImageSource.gallery, maxHeight: 200, maxWidth: 200);
     if (pickedFile != null) {
       setState(() {
         imageFile = File(pickedFile.path);
@@ -27,10 +27,55 @@ class _MyUploadPageState extends State<MyUploadPage> {
     }
   }
 
+  imageFromCamera() async {
+    XFile? pickedFile = await ImagePicker()
+        .pickImage(source: ImageSource.camera, maxHeight: 200, maxWidth: 200);
+    if (pickedFile != null) {
+      setState(() {
+        imageFile = File(pickedFile.path);
+      });
+    }
+  }
+
+  void _showPicker(context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return SafeArea(
+            child: Container(
+              child: new Wrap(
+                children: <Widget>[
+                  new ListTile(
+                      leading: new Icon(Icons.photo_library),
+                      title: new Text('Photo Library'),
+                      onTap: () {
+                        imageFromGallery();
+                        Navigator.of(context).pop();
+                      }),
+                  new ListTile(
+                    leading: new Icon(Icons.photo_camera),
+                    title: new Text('Camera'),
+                    onTap: () {
+                      imageFromCamera();
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+    );
+  }
+
+
   _upLoadNewPost(){
-    String caption = captionController.text.toString().trim();
-    if(caption == null) return;
-    if(imageFile == null) return;
+    String _caption = captionController.text.toString().trim();
+    // if(_caption.isEmpty)return;
+    // if(imageFile == null) return;
+
+    widget.pageController.animateToPage(0,
+        duration: Duration(milliseconds: 300), curve: Curves.easeIn);
   }
 
   @override
@@ -40,14 +85,12 @@ class _MyUploadPageState extends State<MyUploadPage> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: Text("Upload", style: TextStyle(color: Colors.black, fontFamily: 'Billabong', fontSize: 32),),
+        title: const Text("Upload", style: TextStyle(color: Colors.black, fontFamily: 'Billabong', fontSize: 32),),
         centerTitle: true,
         actions: [
           IconButton(
-            onPressed: (){
-              _upLoadNewPost();
-            },
-            icon: Icon(Icons.post_add, color: Color.fromRGBO(245, 96, 64, 1),),
+            onPressed: _upLoadNewPost,
+            icon: const Icon(Icons.post_add, color: Color.fromRGBO(245, 96, 64, 1),),
           )
         ],
       ),
@@ -58,28 +101,31 @@ class _MyUploadPageState extends State<MyUploadPage> {
             children: [
               GestureDetector(
                 onTap: (){
-                  imageFromGallery();
+                  _showPicker(context);
                 },
                 child: Container(
-                    width: double.infinity,
+                  width: double.infinity,
                     height: MediaQuery.of(context).size.width,
                     color: Colors.grey.withOpacity(0.4),
+
                     child: imageFile == null ?
-                    Center(
+                    const Center(
                       child: Icon(Icons.add_a_photo, color: Colors.grey, size: 60,),
                     )
                       : Stack(
-                          children: [
-                            Container(
-                              height: double.infinity,
-                              child: Image.file(imageFile!, fit: BoxFit.cover, ),
-                            ),
-                            Container(
-                              padding: EdgeInsets.all(10),
-                              width: double.infinity,
-                              color: Colors.black12,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Container(
+                          width: double.infinity,
+                          height: double.infinity,
+                          child: Image.file(imageFile!, fit: BoxFit.cover,),
+                        ),
+                        Container(
+                          padding: EdgeInsets.all(10),
+                          height: double.infinity,
+                          width: double.infinity,
+                          color: Colors.black12,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               IconButton(
                                 icon: Icon(Icons.highlight_remove, color: Colors.white,),
@@ -91,17 +137,17 @@ class _MyUploadPageState extends State<MyUploadPage> {
                               )
                             ],
                           ),
-                          )
+                        )
                       ],
                     )
 
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(right: 10, top: 10, left: 10),
+                margin: const EdgeInsets.only(right: 10, top: 10, left: 10),
                 child: TextField(
                   controller: captionController,
-                  style: TextStyle(color: Colors.black),
+                  style: const TextStyle(color: Colors.black),
                   keyboardType: TextInputType.multiline,
                   minLines: 1,
                   maxLines: 5,
