@@ -71,8 +71,8 @@ class _MyUploadPageState extends State<MyUploadPage> {
 
   _upLoadNewPost(){
     String _caption = captionController.text.toString().trim();
-    // if(_caption.isEmpty)return;
-    // if(imageFile == null) return;
+    if(_caption.isEmpty)return;
+    if(imageFile == null) return;
 
     widget.pageController.animateToPage(0,
         duration: Duration(milliseconds: 300), curve: Curves.easeIn);
